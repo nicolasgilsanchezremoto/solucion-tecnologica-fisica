@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowMaster Interactive | TecnoIndustria</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="welcome-screen" class="overlay">
+        <div class="welcome-box">
+            <i class="fas fa-water wave-icon"></i>
+            <h1 id="greeting">¡Hola, Ingeniero!</h1>
+            <p>Bienvenido al optimizador de caudales para <strong>TecnoIndustria S.A.S.</strong></p>
+            <input type="text" id="userName" placeholder="¿Cuál es tu nombre?">
+            <button onclick="startApp()">Ingresar al Sistema</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="status-bar">
+            <span><i class="fas fa-circle-check"></i> Sistema en Línea</span>
+            <span id="user-display"></span>
+        </div>
+        <h1><i class="fas fa-faucet"></i> FlowMaster Pro</h1>
+    </header>
+
+    <main>
+        <section class="solver-container">
+            <div class="calculator-card">
+                <h2>Cálculo de Caudal ($Q = A \cdot v$)</h2>
+                <p class="description">Optimiza el diseño de tuberías controlando el flujo por área y velocidad.</p>
+                
+                <div class="inputs">
+                    <div class="field">
+                        <label>Área de la Tubería ($m²$)</label>
+                        <input type="number" id="area" placeholder="Ej: 0.5" oninput="updateVisuals()">
+                    </div>
+                    <div class="field">
+                        <label>Velocidad del Fluido ($m/s$)</label>
+                        <input type="number" id="velocity" placeholder="Ej: 2.0" oninput="updateVisuals()">
+                    </div>
+                </div>
+
+                <div class="display-result">
+                    <span class="label">Caudal Resultante:</span>
+                    <span id="result-val">0.00</span>
+                    <span class="unit">m³/s</span>
+                </div>
+            </div>
+
+            <div class="visualizer">
+                <h3>Simulador de Flujo en Tiempo Real</h3>
+                <div class="pipe">
+                    <div id="fluid-stream" class="fluid"></div>
+                    <div class="particles" id="particles"></div>
+                </div>
+                <p id="feedback">Ingresa datos para iniciar la simulación.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function startApp() {
+            const name = document.getElementById('userName').value || 'Ingeniero';
+            document.getElementById('greeting').innerText = `¡Bienvenido, ${name}!`;
+            document.getElementById('user-display').innerText = `👤 ${name}`;
+            
+            setTimeout(() => {
+                document.getElementById('welcome-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('welcome-screen').style.display = 'none';
+                }, 500);
+            }, 800);
+        }
+
+        function updateVisuals() {
+            const a = parseFloat(document.getElementById('area').value) || 0;
+            const v = parseFloat(document.getElementById('velocity').value) || 0;
+            const q = a * v;
+            
+            document.getElementById('result-val').innerText = q.toFixed(3);
+            
+            const fluid = document.getElementById('fluid-stream');
+            const feedback = document.getElementById('feedback');
+            
+            // Animación dinámica
+            if (q > 0) {
+                fluid.style.height = Math.min(a * 100, 100) + '%';
+                fluid.style.opacity = '1';
+                const speed = 2 / v; 
+                fluid.style.animationDuration = (speed > 5 ? 5 : speed) + 's';
+                feedback.innerText = v > 5 ? "⚠️ ¡Alerta! Velocidad alta en tubería." : "✅ Flujo estable para producción.";
+                feedback.style.color = v > 5 ? "#e74c3c" : "#2ecc71";
+            } else {
+                fluid.style.opacity = '0.2';
+                feedback.innerText = "Esperando flujo de datos...";
+            }
+        }
+    </script>
+</body>
+</html>
